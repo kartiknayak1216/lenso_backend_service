@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id               String        @id @default(uuid())
+  clerkUserId      String        @unique
+  email            String        @unique
+  name             String?
+  stripeCustomerId String?       @unique
+  subscription     Subscription?
+  credits          Credits?
+  billingHistory   BillingHistory[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+model Subscription {
+  id               String   @id @default(uuid())
+  user             User     @relation(fields: [userId], references: [id])
+  userId           String   @unique
+  stripeSubId      String   @unique
+  price            Int      @default(0)
+  plan             String
+  status           String
+  duration         String
+  currentPeriodEnd DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Credits {
+  id                       String   @id @default(uuid())
+  user                     User     @relation(fields: [userId], references: [id])
+  userId                   String   @unique
+  monthly_credits_assigned Int      @default(0)
+  daily_credits_assigned   Int      @default(0)
+  used_credit              Int      @default(0)
+  today_used               Int      @default(0)
+  is_daily                 Boolean  @default(false)
+  lastReset                DateTime @default(now())
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+}
+
+model BillingHistory {
+  id            String   @id @default(uuid())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+  stripeInvoiceId String @unique
+  amount        Int
+  currency      String   @default("usd")
+  status        String   // e.g., "paid", "pending", "failed"
+  planName      String
+  billingCycle  String   // e.g., "monthly", "yearly"
+  paidAt        DateTime
+  createdAt     DateTime @default(now())
+}
