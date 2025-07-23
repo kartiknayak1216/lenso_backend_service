@@ -4,13 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx prisma generate && npm run start", 
-    "migrate": "npx prisma migrate deploy",
-    "start": "node server.js", 
-    "dev": "nodemon server.js",
-    "seed": "npx prisma db seed" 
-  },
+  "build": "npx prisma generate",
+  "migrate": "npx prisma migrate deploy",
+  "start": "node server.js",
+  "dev": "nodemon server.js"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
